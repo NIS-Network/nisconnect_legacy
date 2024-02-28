@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+    male
+    female
+}
+
+enum GenderPreference {
+    male
+    female
+    all
+}
+
+enum City {
+    akt
+    akb
+    fmalm
+    hbalm
+    ast
+    atr
+    krg
+    kt
+    kst
+    kzl
+    pvl
+    ptr
+    sm
+    tk
+    trz
+    ura
+    ukk
+    fmsh
+    hbsh
+    trk
+}
+
+enum Role {
+    user
+    admin
+    superadmin
+}
+
+model User {
+    id                  BigInt         @id @unique
+    registrationDate    DateTime    @default(now())
+    role                Role?        @default(user)
+    login               String
+    city                City
+    language            String
+    profile             Profile?
+    partner             Int?
+}
+
+model Profile {
+    id                  Int             @id @default(autoincrement())
+    user                User            @relation(fields: [userId], references: [id])
+    userId              BigInt             @unique
+    age                 Int
+    name                String
+    bio                 String
+    gender              Gender
+    genderPreference    GenderPreference
+    photoId             String
+}

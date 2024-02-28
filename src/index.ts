@@ -1,13 +1,12 @@
 import { Scenes, session, Telegraf, Context as TelegrafContext } from 'telegraf'
 import scenes from './scenes'
-import { IUser, userStatements } from './database/user'
-import handers from './handers'
-import { init } from './database'
-import { IProfile, profileStatements } from './database/profile'
+import handlers from './handlers'
+import prisma from './utils/prisma'
+import { Profile, User } from '@prisma/client'
 
 export interface Context extends TelegrafContext {
-    user: IUser | undefined
-    profile: IProfile | undefined
+    user: User | null
+    profile: Profile | null
     scene: Scenes.SceneContextScene<Context, Scenes.WizardSessionData>
     wizard: Scenes.WizardContextWizard<Context>
 }
@@ -16,16 +15,14 @@ const bot = new Telegraf<Context>(process.env.BOT_TOKEN || '')
 const stage = new Scenes.Stage<Context>([scenes.welcome])
 bot.use(session())
 bot.use(stage.middleware())
-bot.use((ctx, next) => {
+bot.use(async (ctx, next) => {
     if (!ctx.message) return next()
-    const user = Object(userStatements.select.get(ctx.message?.from.id))
-    ctx.user = Object.keys(user).length == 0 ? undefined : user
-    const profile = Object(profileStatements.select.get(ctx.message?.from.id))
-    ctx.profile = Object.keys(profile).length == 0 ? undefined : profile
+    ctx.user = await prisma.user.findUnique({ where: { id: ctx.message.from.id } })
+    ctx.profile = ctx.user ? await prisma.profile.findUnique({ where: { userId: ctx.user.id } }) : null
     return next()
 })
 
-bot.start(handers.start)
+bot.start(handlers.start)
+bot.hears('Profile', handlers.profile)
 
-init()
 bot.launch()
