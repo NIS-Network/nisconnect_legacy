@@ -1,7 +1,10 @@
 {
     "flag": "🇬🇧",
     "language": "English",
+
     "cancel": "❌ Cancel",
+    "ok": "OK",
+
     "genderMale": "Male",
     "genderFemale": "Female",
     "genderPreferenceMale": "Males",
@@ -9,6 +12,7 @@
     "genderPreferenceAll": "All",
     "selectLanguage": "Select the language:\nТіл таңда:\nВыбери язык:",
     "enterLogin": "You need to proof that you are an actual NIS student. Please, enter your ID:",
+    "alreadyExists": "The user with this ID already exists. Try with another ID",
     "enterPassword": "Enter your password to enter the school monitoring system. We wouldn't store it",
     "selectCity": "Select the NIS school, where you are studying:",
     "authFailed": "The entered data is invalid. Try again by /start",
@@ -20,6 +24,12 @@
     "enterBio": "Tell me your short biography",
     "sendPhoto": "Send me your profile photo:",
     "thisIsYourProfile": "This is how your profile looks like:",
+
+    "welcomeGreeting": "I'l help you to find new friend among NIS students",
+    "welcomeStart": "Let's start",
+    "welcomeDisclaimer": "You should be aware of fake profiles and bad content. Bot users can see only a public profile of users. Any private data is unaccessible. You can cancel the registration by entering /cancel command.",
+    "welcomeCanceled": "Registration canceled",
+
     "akt": "Aktau CB",
     "akb": "Aktobe PM",
     "fmalm": "Almaty PM",

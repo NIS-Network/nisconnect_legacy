@@ -6,6 +6,15 @@ import keyboards, { languagesList } from '../keyboards'
 import login from '../utils/smsLogin'
 import prisma from '../utils/prisma'
 
+const cancel = async (ctx: Context, next: () => Promise<void>) => {
+    // @ts-expect-error unsolved telegraf issue
+    if ((ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'cancel')) || ctx.message.text == '/cancel') {
+        await ctx.reply(i18n.t('welcomeCanceled'))
+        return await ctx.scene.leave()
+    }
+    return next()
+}
+
 const languageHandler = new Composer<Context>()
 languageHandler.on(message('text'), async (ctx) => {
     const language = ctx.message.text
@@ -19,15 +28,31 @@ languageHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     if (!ctx.scene.state.language) return await ctx.reply(i18n.t('selectLanguage'), keyboards.languages)
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterLogin'), keyboards.empty)
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'welcomeGreeting'), keyboards.start(ctx.scene.state.language))
     return ctx.wizard.next()
 })
 
+const startHandler = new Composer<Context>()
+startHandler.use(cancel)
+startHandler.on(message('text'), async (ctx) => {
+    // @ts-expect-error unsolved telegraf issue
+    if (ctx.message.text == i18n.t(ctx.scene.state.language, 'welcomeStart')) {
+        // @ts-expect-error unsolved telegraf issue
+        await ctx.reply(i18n.t(ctx.scene.state.language, 'welcomeDisclaimer'), keyboards.ok(ctx.scene.state.language))
+        return ctx.wizard.next()
+    }
+})
+
 const loginHandler = new Composer<Context>()
+loginHandler.use(cancel)
 loginHandler.on(message('text'), async (ctx) => {
     const login = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
     if (!Number(login) || login.length != 12) return await ctx.reply(i18n.t(ctx.scene.state.language, 'enterLogin'), keyboards.empty)
+    if (await prisma.user.findUnique({ where: { login: login } })) {
+        // @ts-expect-error unsolved telegraf issue
+        return await ctx.reply(i18n.t(ctx.scene.state.language, 'alreadyExists'))
+    }
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.login = login
     // @ts-expect-error unsolved telegraf issue
@@ -36,6 +61,7 @@ loginHandler.on(message('text'), async (ctx) => {
 })
 
 const passwordHandler = new Composer<Context>()
+passwordHandler.use(cancel)
 passwordHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.password = ctx.message.text
@@ -45,6 +71,7 @@ passwordHandler.on(message('text'), async (ctx) => {
 })
 
 const cityHandler = new Composer<Context>()
+cityHandler.use(cancel)
 cityHandler.on(callbackQuery('data'), async (ctx) => {
     const city = ctx.callbackQuery.data
     // @ts-expect-error unsolved telegraf issue
@@ -65,6 +92,7 @@ cityHandler.use(async (ctx) => {
 })
 
 const ageHandler = new Composer<Context>()
+ageHandler.use(cancel)
 ageHandler.on(message('text'), async (ctx) => {
     const age = Number(ctx.message.text)
     // @ts-expect-error unsolved telegraf issue
@@ -77,6 +105,7 @@ ageHandler.on(message('text'), async (ctx) => {
 })
 
 const genderHandler = new Composer<Context>()
+genderHandler.use(cancel)
 genderHandler.on(message('text'), async (ctx) => {
     const gender = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
@@ -97,6 +126,7 @@ genderHandler.on(message('text'), async (ctx) => {
 })
 
 const genderPreferenceHandler = new Composer<Context>()
+genderPreferenceHandler.use(cancel)
 genderPreferenceHandler.on(message('text'), async (ctx) => {
     const genderPreference = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
@@ -121,6 +151,7 @@ genderPreferenceHandler.on(message('text'), async (ctx) => {
 })
 
 const nameHandler = new Composer<Context>()
+nameHandler.use(cancel)
 nameHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.name = ctx.message.text
@@ -130,6 +161,7 @@ nameHandler.on(message('text'), async (ctx) => {
 })
 
 const bioHandler = new Composer<Context>()
+bioHandler.use(cancel)
 bioHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.bio = ctx.message.text
@@ -139,6 +171,7 @@ bioHandler.on(message('text'), async (ctx) => {
 })
 
 const photoHandler = new Composer<Context>()
+photoHandler.use(cancel)
 photoHandler.on(message('photo'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.photoId = ctx.message.photo[3].file_id
@@ -186,6 +219,15 @@ export default new Scenes.WizardScene<Context>(
         return ctx.wizard.next()
     },
     languageHandler,
+    startHandler,
+    async (ctx) => {
+        // @ts-expect-error unsolved telegraf issue
+        if (ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'ok')) {
+            // @ts-expect-error unsolved telegraf issue
+            await ctx.reply(i18n.t(ctx.scene.state.language, 'enterLogin'), keyboards.empty)
+            return ctx.wizard.next()
+        }
+    },
     loginHandler,
     passwordHandler,
     cityHandler,

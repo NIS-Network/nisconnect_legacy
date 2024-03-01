@@ -1,5 +1,5 @@
 {
-    "name": "zeptozor",
+    "name": "nisconnect",
     "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
@@ -13,7 +13,7 @@
         "NIS",
         "leomatch"
     ],
-    "author": "NIS Network",
+    "author": "zeptozor",
     "license": "ISC",
     "dependencies": {
         "@prisma/client": "5.10.2",
