@@ -7,10 +7,13 @@ import login from '../utils/smsLogin'
 import prisma from '../utils/prisma'
 
 const cancel = async (ctx: Context, next: () => Promise<void>) => {
-    // @ts-expect-error unsolved telegraf issue
-    if ((ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'cancel')) || ctx.message.text == '/cancel') {
-        await ctx.reply(i18n.t('welcomeCanceled'))
-        return await ctx.scene.leave()
+    if (ctx.has(message('text'))) {
+        // @ts-expect-error unsolved telegraf issue
+        if (ctx.message.text == i18n.t(ctx.scene.state.language, 'button:cancel') || ctx.message.text == '/cancel') {
+            // @ts-expect-error unsolved telegraf issue
+            await ctx.reply(i18n.t(ctx.scene.state.language, 'welcome:canceled'))
+            return await ctx.scene.leave()
+        }
     }
     return next()
 }
@@ -26,9 +29,9 @@ languageHandler.on(message('text'), async (ctx) => {
         }
     }
     // @ts-expect-error unsolved telegraf issue
-    if (!ctx.scene.state.language) return await ctx.reply(i18n.t('selectLanguage'), keyboards.languages)
+    if (!ctx.scene.state.language) return await ctx.reply(i18n.t('registration:language'), keyboards.languages)
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'welcomeGreeting'), keyboards.start(ctx.scene.state.language))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'welcome:greeting'), keyboards.start(ctx.scene.state.language))
     return ctx.wizard.next()
 })
 
@@ -36,9 +39,9 @@ const startHandler = new Composer<Context>()
 startHandler.use(cancel)
 startHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
-    if (ctx.message.text == i18n.t(ctx.scene.state.language, 'welcomeStart')) {
+    if (ctx.message.text == i18n.t(ctx.scene.state.language, 'welcome:start')) {
         // @ts-expect-error unsolved telegraf issue
-        await ctx.reply(i18n.t(ctx.scene.state.language, 'welcomeDisclaimer'), keyboards.ok(ctx.scene.state.language))
+        await ctx.reply(i18n.t(ctx.scene.state.language, 'welcome:disclaimer'), keyboards.ok(ctx.scene.state.language))
         return ctx.wizard.next()
     }
 })
@@ -48,15 +51,15 @@ loginHandler.use(cancel)
 loginHandler.on(message('text'), async (ctx) => {
     const login = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    if (!Number(login) || login.length != 12) return await ctx.reply(i18n.t(ctx.scene.state.language, 'enterLogin'), keyboards.empty)
+    if (!Number(login) || login.length != 12) return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:login'), keyboards.empty)
     if (await prisma.user.findUnique({ where: { login: login } })) {
         // @ts-expect-error unsolved telegraf issue
-        return await ctx.reply(i18n.t(ctx.scene.state.language, 'alreadyExists'))
+        return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:exists'))
     }
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.login = login
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterPassword'))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:password'))
     return ctx.wizard.next()
 })
 
@@ -66,7 +69,7 @@ passwordHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.password = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'selectCity'), keyboards.city(ctx.scene.state.language))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:city'), keyboards.city(ctx.scene.state.language))
     return ctx.wizard.next()
 })
 
@@ -80,11 +83,16 @@ cityHandler.on(callbackQuery('data'), async (ctx) => {
     const authorized = await login(ctx.scene.state.login, ctx.scene.state.password, ctx.scene.state.city)
     if (!authorized) {
         // @ts-expect-error unsolved telegraf issue
-        await ctx.reply(i18n.t(ctx.scene.state.language, 'authFailed'))
+        await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:failed'))
         return await ctx.scene.leave()
     }
-    // @ts-expect-error unsolved telegraf issue
-    await ctx.telegram.editMessageText(ctx.callbackQuery.message?.chat.id, ctx.callbackQuery.message?.message_id, ctx.callbackQuery.inline_message_id, i18n.t(ctx.scene.state.language, 'authSuccess'))
+    await ctx.telegram.editMessageText(
+        ctx.callbackQuery.message?.chat.id,
+        ctx.callbackQuery.message?.message_id,
+        ctx.callbackQuery.inline_message_id,
+        // @ts-expect-error unsolved telegraf issue
+        i18n.t(ctx.scene.state.language, 'registration:success'),
+    )
     return ctx.wizard.next()
 })
 cityHandler.use(async (ctx) => {
@@ -96,11 +104,11 @@ ageHandler.use(cancel)
 ageHandler.on(message('text'), async (ctx) => {
     const age = Number(ctx.message.text)
     // @ts-expect-error unsolved telegraf issue
-    if (!age) return await ctx.reply(i18n.t(ctx.scene.state.language, 'enterAge'), keyboards.empty)
+    if (!age) return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:age'), keyboards.empty)
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.age = age
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterGender'), keyboards.gender(ctx.scene.state.language))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:gender'), keyboards.gender(ctx.scene.state.language))
     return ctx.wizard.next()
 })
 
@@ -109,19 +117,19 @@ genderHandler.use(cancel)
 genderHandler.on(message('text'), async (ctx) => {
     const gender = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    if (gender == i18n.t(ctx.scene.state.language, 'genderMale')) {
+    if (gender == i18n.t(ctx.scene.state.language, 'gender:male')) {
         // @ts-expect-error unsolved telegraf issue
         ctx.scene.state.gender = 'male'
         // @ts-expect-error unsolved telegraf issue
-    } else if (gender == i18n.t(ctx.scene.state.language, 'genderFemale')) {
+    } else if (gender == i18n.t(ctx.scene.state.language, 'gender:female')) {
         // @ts-expect-error unsolved telegraf issue
         ctx.scene.state.gender == 'female'
     } else {
         // @ts-expect-error unsolved telegraf issue
-        return await ctx.reply(i18n.t(ctx.scene.state.language, 'enterGender'), keyboards.gender(ctx.scene.state.language))
+        return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:gender'), keyboards.gender(ctx.scene.state.language))
     }
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterGenderPreference'), keyboards.interest(ctx.scene.state.language))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:genderPreference'), keyboards.interest(ctx.scene.state.language))
     return ctx.wizard.next()
 })
 
@@ -130,23 +138,23 @@ genderPreferenceHandler.use(cancel)
 genderPreferenceHandler.on(message('text'), async (ctx) => {
     const genderPreference = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreferenceMale')) {
+    if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreference:male')) {
         // @ts-expect-error unsolved telegraf issue
         ctx.scene.state.genderPreference = 'male'
         // @ts-expect-error unsolved telegraf issue
-    } else if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreferenceFemale')) {
+    } else if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreference:female')) {
         // @ts-expect-error unsolved telegraf issue
         ctx.scene.state.genderPreference = 'female'
         // @ts-expect-error unsolved telegraf issue
-    } else if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreferenceAll')) {
+    } else if (genderPreference == i18n.t(ctx.scene.state.language, 'genderPreference:all')) {
         // @ts-expect-error unsolved telegraf issue
         ctx.scene.state.genderPreference = 'all'
     } else {
         // @ts-expect-error unsolved telegraf issue
-        return await ctx.reply(i18n.t(ctx.scene.state.language, 'enterPreference'), keyboards.interest(ctx.scene.state.language))
+        return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:genderPreference'), keyboards.interest(ctx.scene.state.language))
     }
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterName'), keyboards.empty)
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:name'), keyboards.empty)
     return ctx.wizard.next()
 })
 
@@ -156,7 +164,7 @@ nameHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.name = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'enterBio'))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:bio'))
     return ctx.wizard.next()
 })
 
@@ -166,7 +174,7 @@ bioHandler.on(message('text'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.bio = ctx.message.text
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'sendPhoto'))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:photo'))
     return ctx.wizard.next()
 })
 
@@ -174,11 +182,11 @@ const photoHandler = new Composer<Context>()
 photoHandler.use(cancel)
 photoHandler.on(message('photo'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
-    ctx.scene.state.photoId = ctx.message.photo[3].file_id
+    ctx.scene.state.photoId = ctx.message.photo[ctx.message.photo.length - 1].file_id
     // @ts-expect-error unsolved telegraf issue
-    await ctx.reply(i18n.t(ctx.scene.state.language, 'thisIsYourProfile'))
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:profile'))
     // @ts-expect-error unsolved telegraf issue
-    await ctx.sendPhoto(ctx.scene.state.photoId, { caption: `${ctx.scene.state.name}, ${ctx.scene.state.age} - ${ctx.scene.state.bio}` })
+    await ctx.sendPhoto(ctx.scene.state.photoId, { caption: `${ctx.scene.state.name}, ${ctx.scene.state.age} - ${ctx.scene.state.bio}` }, keyboards.main(ctx.scene.state.language))
     await prisma.user.create({
         data: {
             id: ctx.message.from.id,
@@ -215,16 +223,16 @@ photoHandler.use(async (ctx) => {
 export default new Scenes.WizardScene<Context>(
     'welcome',
     async (ctx) => {
-        await ctx.reply(i18n.t('selectLanguage'), keyboards.languages)
+        await ctx.reply(i18n.t('message:language'), keyboards.languages)
         return ctx.wizard.next()
     },
     languageHandler,
     startHandler,
     async (ctx) => {
         // @ts-expect-error unsolved telegraf issue
-        if (ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'ok')) {
+        if (ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'button:ok')) {
             // @ts-expect-error unsolved telegraf issue
-            await ctx.reply(i18n.t(ctx.scene.state.language, 'enterLogin'), keyboards.empty)
+            await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:login'), keyboards.empty)
             return ctx.wizard.next()
         }
     },
