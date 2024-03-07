@@ -8,3 +8,5 @@
 
 *.log
 npm-debug.log*
+
+/src/test.js

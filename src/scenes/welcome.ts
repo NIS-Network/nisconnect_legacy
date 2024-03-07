@@ -123,7 +123,7 @@ genderHandler.on(message('text'), async (ctx) => {
         // @ts-expect-error unsolved telegraf issue
     } else if (gender == i18n.t(ctx.scene.state.language, 'gender:female')) {
         // @ts-expect-error unsolved telegraf issue
-        ctx.scene.state.gender == 'female'
+        ctx.scene.state.gender = 'female'
     } else {
         // @ts-expect-error unsolved telegraf issue
         return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:gender'), keyboards.gender(ctx.scene.state.language))
@@ -186,34 +186,41 @@ photoHandler.on(message('photo'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:profile'))
     // @ts-expect-error unsolved telegraf issue
-    await ctx.sendPhoto(ctx.scene.state.photoId, { caption: `${ctx.scene.state.name}, ${ctx.scene.state.age} - ${ctx.scene.state.bio}` }, keyboards.main(ctx.scene.state.language))
-    await prisma.user.create({
-        data: {
-            id: ctx.message.from.id,
-            // @ts-expect-error unsolved telegraf issue
-            city: ctx.scene.state.city,
-            // @ts-expect-error unsolved telegraf issue
-            login: ctx.scene.state.login,
-            // @ts-expect-error unsolved telegraf issue
-            language: ctx.scene.state.language,
-            profile: {
-                create: {
-                    // @ts-expect-error unsolved telegraf issue
-                    age: ctx.scene.state.age,
-                    // @ts-expect-error unsolved telegraf issue
-                    bio: ctx.scene.state.bio,
-                    // @ts-expect-error unsolved telegraf issue
-                    gender: ctx.scene.state.gender,
-                    // @ts-expect-error unsolved telegraf issue
-                    name: ctx.scene.state.name,
-                    // @ts-expect-error unsolved telegraf issue
-                    genderPreference: ctx.scene.state.genderPreference,
-                    // @ts-expect-error unsolved telegraf issue
-                    photoId: ctx.scene.state.photoId,
+    await ctx.sendPhoto(ctx.scene.state.photoId, {
+        // @ts-expect-error unsolved telegraf issue
+        caption: `${ctx.scene.state.name}, ${ctx.scene.state.age} - ${ctx.scene.state.bio}`,
+        // @ts-expect-error unsolved telegraf issue
+        reply_markup: keyboards.main(ctx.scene.state.language).reply_markup,
+    })
+    await prisma.user
+        .create({
+            data: {
+                id: ctx.message.from.id,
+                // @ts-expect-error unsolved telegraf issue
+                city: ctx.scene.state.city,
+                // @ts-expect-error unsolved telegraf issue
+                login: ctx.scene.state.login,
+                // @ts-expect-error unsolved telegraf issue
+                language: ctx.scene.state.language,
+                profile: {
+                    create: {
+                        // @ts-expect-error unsolved telegraf issue
+                        age: ctx.scene.state.age,
+                        // @ts-expect-error unsolved telegraf issue
+                        bio: ctx.scene.state.bio,
+                        // @ts-expect-error unsolved telegraf issue
+                        gender: ctx.scene.state.gender,
+                        // @ts-expect-error unsolved telegraf issue
+                        name: ctx.scene.state.name,
+                        // @ts-expect-error unsolved telegraf issue
+                        genderPreference: ctx.scene.state.genderPreference,
+                        // @ts-expect-error unsolved telegraf issue
+                        photoId: ctx.scene.state.photoId,
+                    },
                 },
             },
-        },
-    })
+        })
+        .catch(console.log)
     return await ctx.scene.leave()
 })
 photoHandler.use(async (ctx) => {

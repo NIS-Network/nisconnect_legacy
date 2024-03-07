@@ -21,7 +21,9 @@ const deleteHandler = new Composer<Context>()
 deleteHandler.use(cancel)
 deleteHandler.on(message('text'), async (ctx) => {
     if (!ctx.user) return await ctx.scene.leave()
-    if (ctx.message.text != i18n.t(ctx.user.language, 'button:deleteUserAnyway')) return await ctx.reply(i18n.t(ctx.user.language, 'message:deleteUser'), keyboards.deleteUser(ctx.user.language))
+    if (ctx.message.text != i18n.t(ctx.user.language, 'button:deleteUserAnyway')) {
+        return await ctx.reply(i18n.t(ctx.user.language, 'message:deleteUser'), keyboards.deleteUser(ctx.user.language))
+    }
     await ctx.reply(i18n.t(ctx.user.language, 'message:confirmPassword', { id: ctx.user.login }), keyboards.cancel(ctx.user.language))
     return ctx.wizard.next()
 })
@@ -36,8 +38,8 @@ confirmPasswordHandler.on(message('text'), async (ctx) => {
         await ctx.reply(i18n.t(ctx.user.language, 'message:wrongPassword'), keyboards.main(ctx.user.language))
         return await ctx.scene.leave()
     }
-    await prisma.profile.delete({ where: { userId: ctx.message.from.id } })
-    await prisma.user.delete({ where: { id: ctx.message.from.id } }).catch(console.log)
+    await prisma.profile.delete({ where: { userId: ctx.user.id } })
+    await prisma.user.delete({ where: { id: ctx.user.id } })
     await ctx.reply(i18n.t(ctx.user.language, 'message:userDeleted'), keyboards.empty)
     await ctx.scene.leave()
 })

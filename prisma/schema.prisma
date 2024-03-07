@@ -47,15 +47,22 @@ enum Role {
     superadmin
 }
 
+enum Status {
+    searching
+    default
+    chatting
+}
+
 model User {
     id                  BigInt          @id @unique
     registrationDate    DateTime        @default(now())
-    role                Role?           @default(user)
+    role                Role            @default(user)
     login               String          @unique
     city                City
     language            String
     profile             Profile?
-    partner             Int?
+    partner             BigInt?
+    status              Status          @default(default)
 }
 
 model Profile {
@@ -68,4 +75,12 @@ model Profile {
     gender              Gender
     genderPreference    GenderPreference
     photoId             String
+}
+
+model Queue {
+    id                  Int                 @id @default(autoincrement())
+    user                BigInt              @unique
+    gender              Gender
+    genderPreference    GenderPreference
+    createdAt           DateTime            @default(now())
 }

@@ -5,7 +5,7 @@ import { i18n } from '../utils/i18n'
 export default async (ctx: Context) => {
     if (!ctx.user || !ctx.profile) return
     const locale = ctx.user.language
-    await ctx.reply(
+    return await ctx.reply(
         i18n.t(locale, 'message:settings', {
             id: ctx.user.login,
             city: i18n.t(locale, ctx.user.city),

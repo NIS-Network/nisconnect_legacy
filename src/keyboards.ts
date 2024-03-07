@@ -1,6 +1,6 @@
 import { Markup } from 'telegraf'
 import chunk from './utils/chunk'
-import { City } from '@prisma/client'
+import { City, Status } from '@prisma/client'
 import { i18n } from './utils/i18n'
 
 export const languagesList: Record<string, string> = {}
@@ -23,9 +23,9 @@ const cancel = (locale: string) => Markup.keyboard([[i18n.t(locale, 'button:canc
 const gender = (locale: string) => Markup.keyboard([[i18n.t(locale, 'gender:male'), i18n.t(locale, 'gender:female')]]).resize()
 const interest = (locale: string) => Markup.keyboard([[i18n.t(locale, 'genderPreference:male'), i18n.t(locale, 'genderPreference:female'), i18n.t(locale, 'genderPreference:all')]]).resize()
 
-const main = (locale: string) =>
+const main = (locale: string, status: Status = 'default') =>
     Markup.keyboard([
-        [i18n.t(locale, 'button:anonimousChat'), i18n.t(locale, 'button:searchPartner')],
+        [i18n.t(locale, status == 'default' ? 'button:searchPartner' : status == 'chatting' ? 'button:leavePartner' : 'button:stopSearching'), i18n.t(locale, 'button:viewProfiles')],
         [i18n.t(locale, 'button:profile'), i18n.t(locale, 'button:settings')],
     ]).resize()
 

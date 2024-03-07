@@ -102,8 +102,8 @@ class I18n {
         let key: string = ''
         let values: Record<string, any> = {}
 
-        if (typeof languageCodeOrKey === 'string') {
-            if (typeof keyOrData === 'string') {
+        if (typeof languageCodeOrKey == 'string') {
+            if (typeof keyOrData == 'string') {
                 languageCode = languageCodeOrKey
                 key = keyOrData
                 values = data || {}
