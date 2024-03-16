@@ -2,13 +2,15 @@ import { Context } from '..'
 import prisma from '../utils/prisma'
 
 export default async (ctx: Context, next: () => Promise<void>) => {
-    if (ctx.message) {
-        ctx.user = await prisma.user.findUnique({ where: { id: ctx.message.from.id } })
-        ctx.profile = ctx.user ? await prisma.profile.findUnique({ where: { userId: ctx.user.id } }) : null
+    const user = await prisma.user.findUnique({ where: { id: ctx.message?.from.id ?? ctx.callbackQuery?.from.id } })
+    const profile = await prisma.profile.findUnique({ where: { userId: ctx.message?.from.id ?? ctx.callbackQuery?.from.id } })
+    if (user && profile) {
+        ctx.session.user = user
+        ctx.session.profile = profile
+        ctx.session.authorized = true
     }
-    if (ctx.callbackQuery) {
-        ctx.user = await prisma.user.findUnique({ where: { id: ctx.callbackQuery.from.id } })
-        ctx.profile = ctx.user ? await prisma.profile.findUnique({ where: { userId: ctx.user.id } }) : null
+    if (ctx.session.authorized && !ctx.session.viewProfilesState) {
+        ctx.session.viewProfilesState = { profiles: [] }
     }
     return next()
 }

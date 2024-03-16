@@ -37,6 +37,12 @@ const settings = (locale: string) =>
     ])
 const deleteUser = (locale: string) => Markup.keyboard([[i18n.t(locale, 'button:deleteUserAnyway')], [i18n.t(locale, 'button:cancel')]]).resize()
 
+const viewProfile = Markup.keyboard([['❤️', '💌', '👎', '💤']]).resize()
+const viewLiked = Markup.keyboard([['1. ❤️', '2. ❌']]).resize()
+const viewLikedProfile = Markup.keyboard([['❤️', '💌', '👎']]).resize()
+const report = Markup.inlineKeyboard([[{ text: 'Report', callback_data: 'report' }]])
+const respond = (reciever: number) => Markup.inlineKeyboard([[{ text: 'Respond', callback_data: `respond_${reciever}` }]])
+
 export default {
     empty,
     languages,
@@ -49,4 +55,9 @@ export default {
     ok,
     settings,
     deleteUser,
+    viewProfile,
+    viewLiked,
+    viewLikedProfile,
+    report,
+    respond,
 }

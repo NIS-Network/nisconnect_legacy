@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Profile" ADD COLUMN     "disabled" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "liked" INTEGER[] DEFAULT ARRAY[]::INTEGER[];

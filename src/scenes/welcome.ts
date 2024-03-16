@@ -192,35 +192,35 @@ photoHandler.on(message('photo'), async (ctx) => {
         // @ts-expect-error unsolved telegraf issue
         reply_markup: keyboards.main(ctx.scene.state.language).reply_markup,
     })
-    await prisma.user
-        .create({
-            data: {
-                id: ctx.message.from.id,
-                // @ts-expect-error unsolved telegraf issue
-                city: ctx.scene.state.city,
-                // @ts-expect-error unsolved telegraf issue
-                login: ctx.scene.state.login,
-                // @ts-expect-error unsolved telegraf issue
-                language: ctx.scene.state.language,
-                profile: {
-                    create: {
-                        // @ts-expect-error unsolved telegraf issue
-                        age: ctx.scene.state.age,
-                        // @ts-expect-error unsolved telegraf issue
-                        bio: ctx.scene.state.bio,
-                        // @ts-expect-error unsolved telegraf issue
-                        gender: ctx.scene.state.gender,
-                        // @ts-expect-error unsolved telegraf issue
-                        name: ctx.scene.state.name,
-                        // @ts-expect-error unsolved telegraf issue
-                        genderPreference: ctx.scene.state.genderPreference,
-                        // @ts-expect-error unsolved telegraf issue
-                        photoId: ctx.scene.state.photoId,
-                    },
-                },
-            },
-        })
-        .catch(console.log)
+    ctx.session.user = await prisma.user.create({
+        data: {
+            id: ctx.message.from.id,
+            // @ts-expect-error unsolved telegraf issue
+            city: ctx.scene.state.city,
+            // @ts-expect-error unsolved telegraf issue
+            login: ctx.scene.state.login,
+            // @ts-expect-error unsolved telegraf issue
+            language: ctx.scene.state.language,
+        },
+    })
+    ctx.session.profile = await prisma.profile.create({
+        data: {
+            // @ts-expect-error unsolved telegraf issue
+            age: ctx.scene.state.age,
+            // @ts-expect-error unsolved telegraf issue
+            bio: ctx.scene.state.bio,
+            // @ts-expect-error unsolved telegraf issue
+            gender: ctx.scene.state.gender,
+            // @ts-expect-error unsolved telegraf issue
+            name: ctx.scene.state.name,
+            // @ts-expect-error unsolved telegraf issue
+            genderPreference: ctx.scene.state.genderPreference,
+            // @ts-expect-error unsolved telegraf issue
+            photoId: ctx.scene.state.photoId,
+            userId: ctx.message.from.id,
+        },
+    })
+    ctx.session.authorized = true
     return await ctx.scene.leave()
 })
 photoHandler.use(async (ctx) => {

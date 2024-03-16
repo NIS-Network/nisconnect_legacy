@@ -27,7 +27,7 @@
     "registration:password": "Enter your password to enter the school monitoring system (I wouldn't store it):",
     "registration:city": "Select the NIS school, where you are studying:",
     "registration:failed": "The entered data is invalid. Try again by /start",
-    "registration:success": "Successful registration! Let's start filling out your profile.",
+    "registration:success": "Successful registration! Let's start filling out your profile. How old are you?",
     "registration:age": "How old are you?",
     "registration:gender": "What is your gender?",
     "registration:genderPreference": "Who are you looking for?",
