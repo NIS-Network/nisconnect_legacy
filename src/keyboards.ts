@@ -1,7 +1,7 @@
 import { Markup } from 'telegraf'
 import chunk from './utils/chunk'
 import { City, Status } from '@prisma/client'
-import { i18n } from './utils/i18n'
+import i18n from './utils/i18n'
 
 export const languagesList: Record<string, string> = {}
 for (const locale of i18n.localesList) {
@@ -40,8 +40,8 @@ const deleteUser = (locale: string) => Markup.keyboard([[i18n.t(locale, 'button:
 const viewProfile = Markup.keyboard([['❤️', '💌', '👎', '💤']]).resize()
 const viewLiked = Markup.keyboard([['1. ❤️', '2. ❌']]).resize()
 const viewLikedProfile = Markup.keyboard([['❤️', '💌', '👎']]).resize()
-const report = Markup.inlineKeyboard([[{ text: 'Report', callback_data: 'report' }]])
-const respond = (reciever: number) => Markup.inlineKeyboard([[{ text: 'Respond', callback_data: `respond_${reciever}` }]])
+const report = (locale: string) => Markup.inlineKeyboard([[{ text: i18n.t(locale, 'button:report'), callback_data: 'report' }]])
+const respond = (locale: string, reciever: number) => Markup.inlineKeyboard([[{ text: i18n.t(locale, 'button:respond'), callback_data: `respond_${reciever}` }]])
 
 export default {
     empty,

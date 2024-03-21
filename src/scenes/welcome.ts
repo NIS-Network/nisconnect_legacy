@@ -1,7 +1,7 @@
 import { Composer, Scenes } from 'telegraf'
 import { message, callbackQuery } from 'telegraf/filters'
 import { Context } from '../'
-import { i18n } from '../utils/i18n'
+import i18n from '../utils/i18n'
 import keyboards, { languagesList } from '../keyboards'
 import login from '../utils/smsLogin'
 import prisma from '../utils/prisma'
@@ -29,7 +29,7 @@ languageHandler.on(message('text'), async (ctx) => {
         }
     }
     // @ts-expect-error unsolved telegraf issue
-    if (!ctx.scene.state.language) return await ctx.reply(i18n.t('registration:language'), keyboards.languages)
+    if (!ctx.scene.state.language) return await ctx.reply(i18n.t('message:language'), keyboards.languages)
     // @ts-expect-error unsolved telegraf issue
     await ctx.reply(i18n.t(ctx.scene.state.language, 'welcome:greeting'), keyboards.start(ctx.scene.state.language))
     return ctx.wizard.next()
@@ -188,7 +188,7 @@ photoHandler.on(message('photo'), async (ctx) => {
     // @ts-expect-error unsolved telegraf issue
     await ctx.sendPhoto(ctx.scene.state.photoId, {
         // @ts-expect-error unsolved telegraf issue
-        caption: `${ctx.scene.state.name}, ${ctx.scene.state.age} - ${ctx.scene.state.bio}`,
+        caption: i18n.t(ctx.scene.state.language, 'message:profile', { name: ctx.scene.state.name, age: ctx.scene.state.age, bio: ctx.scene.state.bio }),
         // @ts-expect-error unsolved telegraf issue
         reply_markup: keyboards.main(ctx.scene.state.language).reply_markup,
     })

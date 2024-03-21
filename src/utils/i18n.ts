@@ -62,7 +62,7 @@ class I18n {
             throw new Error(`Value of ${value} at ${translation} is not a number`)
         }
         const pluralForms = match[2].replace('{', '').replace('}', '').split(',')
-        let pluralForm = ''
+        let pluralForm: 'one' | 'many' | 'few' = 'one'
         switch (languageCode) {
             case 'kz':
                 pluralForm = 'one'
@@ -97,9 +97,9 @@ class I18n {
         return translation.replace(new RegExp(regex, 'g'), pluralValue)
     }
 
-    public t(languageCodeOrKey: string, keyOrData?: string | Record<string, any>, data?: Record<string, any>): string {
-        let languageCode: string = this.options.default
-        let key: string = ''
+    public t(languageCodeOrKey: string, keyOrData?: string | Record<string, any>, data?: Record<string, any>) {
+        let languageCode = this.options.default
+        let key = ''
         let values: Record<string, any> = {}
 
         if (typeof languageCodeOrKey == 'string') {
@@ -116,7 +116,6 @@ class I18n {
         const localeData = this.getLocale(languageCode)
         let translation = localeData[key] || ''
         translation = this.pluralization(translation, values, languageCode)
-
         Object.keys(values).forEach((valueKey) => {
             translation = translation.replace(new RegExp(`\\$\\{${valueKey}\\}`, 'g'), values[valueKey])
         })
@@ -125,5 +124,4 @@ class I18n {
     }
 }
 
-export const i18n = new I18n({ default: 'en', directory: path.resolve(__dirname, '..', 'locales') })
-export default I18n
+export default new I18n({ default: 'en', directory: path.resolve(__dirname, '..', 'locales') })

@@ -3,7 +3,7 @@ import changeLanguage from './changeLanguage'
 import deleteUser from './deleteUser'
 import viewProfiles from './viewProfiles'
 import viewLiked from './viewLiked'
-import chitchat from './chitchat'
+import chitChat from './chitChat'
 
 export default {
     welcome,
@@ -11,5 +11,5 @@ export default {
     deleteUser,
     viewProfiles,
     viewLiked,
-    chitchat,
+    chitChat,
 }

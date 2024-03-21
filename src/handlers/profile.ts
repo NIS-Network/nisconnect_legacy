@@ -1,5 +1,8 @@
 import { Context } from '..'
+import i18n from '../utils/i18n'
 
 export default async (ctx: Context) => {
-    await ctx.sendPhoto(ctx.session.profile.photoId, { caption: `${ctx.session.profile.name}, ${ctx.session.profile.age} - ${ctx.session.profile.bio}` })
+    await ctx.sendPhoto(ctx.session.profile.photoId, {
+        caption: i18n.t(ctx.session.user.language, 'message:profile', { name: ctx.session.profile.name, age: ctx.session.profile.age, bio: ctx.session.profile.bio }),
+    })
 }

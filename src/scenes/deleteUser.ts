@@ -1,6 +1,6 @@
 import { Composer, Scenes } from 'telegraf'
 import { Context } from '..'
-import { i18n } from '../utils/i18n'
+import i18n from '../utils/i18n'
 import { message } from 'telegraf/filters'
 import keyboards from '../keyboards'
 import login from '../utils/smsLogin'
@@ -9,7 +9,7 @@ import prisma from '../utils/prisma'
 const cancel = async (ctx: Context, next: () => Promise<void>) => {
     if (ctx.has(message('text'))) {
         if (ctx.message.text == i18n.t(ctx.session.user.language, 'button:cancel') || ctx.message.text == '/cancel') {
-            await ctx.reply(i18n.t(ctx.session.user.language, 'message:canceled'), keyboards.main(ctx.session.user.language))
+            await ctx.reply(i18n.t(ctx.session.user.language, 'message:canceled'), keyboards.main(ctx.session.user.language, ctx.session.user.status))
             return await ctx.scene.leave()
         }
     }

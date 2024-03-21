@@ -1,14 +1,17 @@
+import './locales/en.json'
+import './locales/kz.json'
+import './locales/ru.json'
+
 import { Scenes, session, Telegraf, Context as TelegrafContext } from 'telegraf'
 import scenes from './scenes'
 import handlers from './handlers'
 import { Profile, User } from '@prisma/client'
-import { i18n } from './utils/i18n'
+import i18n from './utils/i18n'
 import { message } from 'telegraf/filters'
 import usersOnly from './handlers/authorizedOnly'
 import { Update } from 'telegraf/types'
 import middlewares from './middlewares'
 import { viewProfilesState } from './scenes/viewProfiles'
-import viewProfiles from './handlers/viewProfiles'
 
 interface Session extends Scenes.WizardSession {
     user: User
@@ -59,7 +62,7 @@ bot.hears(
 bot.hears(
     i18n.localesList.map((locale) => i18n.t(locale, 'button:viewProfiles')),
     usersOnly,
-    viewProfiles,
+    handlers.viewProfiles,
 )
 bot.action('changeLanguage', handlers.authorizedOnly, async (ctx) => await ctx.scene.enter('changeLanguage'))
 bot.action('deleteUser', handlers.authorizedOnly, async (ctx) => await ctx.scene.enter('deleteUser'))
@@ -102,7 +105,7 @@ bot.on(message('video_note'), async (ctx) => {
 })
 
 bot.catch((err, ctx) => {
-    console.log(err)
+    console.error(err)
     console.log(ctx)
 })
 bot.launch()

@@ -1,6 +1,6 @@
 import { Context } from '..'
 import keyboards from '../keyboards'
-import { i18n } from '../utils/i18n'
+import i18n from '../utils/i18n'
 
 export default async (ctx: Context) => {
     const locale = ctx.session.user.language

@@ -1,12 +1,12 @@
 import { Scenes } from 'telegraf'
 import { Context } from '..'
 import prisma from '../utils/prisma'
-import { i18n } from '../utils/i18n'
+import i18n from '../utils/i18n'
 import keyboards from '../keyboards'
 
 async function show(ctx: Context) {
     if (ctx.session.viewProfilesState.profiles.length <= 0) {
-        await ctx.reply('You have finished viewing all the profiles that liked you', keyboards.main(ctx.session.user.language, ctx.session.user.status))
+        await ctx.reply(i18n.t(ctx.session.user.language, 'message:noLiked'), keyboards.main(ctx.session.user.language, ctx.session.user.status))
         return await ctx.scene.leave()
     }
     const profile = ctx.session.viewProfilesState.profiles[0]
@@ -27,20 +27,20 @@ scene.hears('❤️', async (ctx) => {
     const user = await prisma.user.findUnique({ where: { id: profile?.userId } })
     if (!user || !profile) return
     const tgUser = await ctx.telegram.getChat(Number(user.id))
-    await ctx.replyWithHTML(`New friend -> <a href="tg://resolve?domain=${tgUser.type == 'private' && tgUser.username}">${profile.name}</a>`, keyboards.report)
-    await ctx.telegram.sendMessage(Number(user.id), `New friend -> <a href="tg://resolve?domain=${ctx.message.from.username}">${ctx.session.profile.name}</a>`, {
+    await ctx.replyWithHTML(i18n.t(user.language, 'message:newFriend', { username: tgUser.type == 'private' && tgUser.username, name: profile.name }), keyboards.report)
+    await ctx.telegram.sendMessage(Number(user.id), i18n.t(user.language, 'message:newFriend', { username: ctx.message.from.username, name: ctx.session.profile.name }), {
         reply_markup: keyboards.report.reply_markup,
         parse_mode: 'HTML',
     })
     await show(ctx)
 })
 scene.hears('💌', async (ctx) => {
-    ctx.scene.enter('chitchat', {
+    ctx.scene.enter('chitChat', {
         reciever: ctx.session.user.seen[ctx.session.user.seen.length - 1],
         cancelFC: async (ctx: Context) => await ctx.scene.enter('viewLiked'),
         returnFC: async (ctx: Context) => {
             console.log(ctx.from)
-            await ctx.reply('Your message have been sent')
+            await ctx.reply(i18n.t(ctx.session.user.language, 'message:messageSent'))
             await ctx.scene.enter('viewLiked')
         },
     })

@@ -1,6 +1,7 @@
 import { Context } from '..'
 import keyboards from '../keyboards'
-import { i18n } from '../utils/i18n'
+import capitalizeFirst from '../utils/capitalizeFirst'
+import i18n from '../utils/i18n'
 import prisma from '../utils/prisma'
 
 export default async (ctx: Context) => {
@@ -23,9 +24,8 @@ export default async (ctx: Context) => {
     if (queue.length == 0) {
         await prisma.queue.create({ data: { gender: ctx.session.profile.gender, genderPreference: ctx.session.profile.genderPreference, user: ctx.session.user.id } }).catch(console.log)
         ctx.session.user = await prisma.user.update({ where: { id: ctx.session.user.id }, data: { status: 'searching' } })
-        const word = ctx.session.profile.genderPreference
         return await ctx.reply(
-            i18n.t(ctx.session.user.language, `message:found${word.charAt(0).toUpperCase() + word.slice(1)}`, { partner: 0 }),
+            i18n.t(ctx.session.user.language, `message:found${capitalizeFirst(ctx.session.profile.genderPreference)}`, { partner: 0 }),
             keyboards.main(ctx.session.user.language, 'searching'),
         )
     }

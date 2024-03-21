@@ -3,14 +3,13 @@ import { Context } from '..'
 import keyboards from '../keyboards'
 import { combineInlineKeyboards } from '../utils/combineKeyboards'
 import { message } from 'telegraf/filters'
-import { i18n } from '../utils/i18n'
+import i18n from '../utils/i18n'
 import prisma from '../utils/prisma'
 
 const cancel = async (ctx: Context, next: () => Promise<void>) => {
     // @ts-expect-error unsolved telegraf issue
     if (ctx.has(message('text')) && ctx.message.text == i18n.t(ctx.scene.state.language, 'button:cancel')) {
-        // @ts-expect-error unsolved telegraf issue
-        await ctx.reply(i18n.t(ctx.scene.state.language, 'message:canceled'))
+        await ctx.reply(i18n.t(ctx.session.user.language, 'message:canceled'), keyboards.main(ctx.session.user.language, ctx.session.user.status))
         await ctx.scene.leave()
         // @ts-expect-error unsolved telegraf issue
         return await ctx.wizard.state.cancelFC(ctx)
@@ -23,17 +22,18 @@ messageHandler.use(cancel)
 messageHandler.on(message('text'), async (ctx) => {
     const message = ctx.message.text
     if (message.length < 3) {
-        return await ctx.reply('Your message is too short, try again')
+        return await ctx.reply(i18n.t(ctx.session.user.language, 'message:tooShort'))
     }
     // @ts-expect-error unsolved telegraf issue
     const profile = await prisma.profile.findUnique({ where: { id: ctx.wizard.state.reciever } })
-    if (!profile) {
+    const user = await prisma.user.findUnique({ where: { id: profile?.userId } })
+    if (!profile || !user) {
         await ctx.scene.leave()
         // @ts-expect-error unsolved telegraf issue
         return await ctx.wizard.state.cancelFC(ctx)
     }
-    await ctx.telegram.sendMessage(Number(profile.userId), `${ctx.session.profile.name} has a message for you\n\n${message}`, {
-        reply_markup: combineInlineKeyboards(keyboards.report, keyboards.respond(Number(ctx.session.profile.id))).reply_markup,
+    await ctx.telegram.sendMessage(Number(profile.userId), i18n.t(user.language, 'message:responded', { name: ctx.session.profile.name, message }), {
+        reply_markup: combineInlineKeyboards(keyboards.report(user.language), keyboards.respond(user.language, Number(ctx.session.profile.id))).reply_markup,
     })
     await ctx.scene.leave()
     // @ts-expect-error unsolved telegraf issue
@@ -41,9 +41,9 @@ messageHandler.on(message('text'), async (ctx) => {
 })
 
 export default new Scenes.WizardScene<Context>(
-    'chitchat',
+    'chitChat',
     async (ctx) => {
-        await ctx.reply('Enter a short text message:', keyboards.cancel(ctx.session.user.language))
+        await ctx.reply(i18n.t(ctx.session.user.language, 'message:enterShortText'), keyboards.cancel(ctx.session.user.language))
         ctx.wizard.next()
     },
     messageHandler,
