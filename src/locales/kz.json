@@ -16,6 +16,7 @@
     "button:deleteUserAnyway": "Иә, бәрібір өшіргім келеді",
     "button:report": "Арыз жазу",
     "button:respond": "Жауап беру",
+    "button:leaveCurrent": "Ештеңе өзгертпеу",
 
     "gender:male": "Ұл",
     "gender:female": "Қыз",
@@ -75,6 +76,10 @@
     "message:start": "Қош келдің, мен НЗМ оқушыларын конектить етемін",
     "message:stopedSearching": "Сен анонимді дос іздеуді тоқтаттың",
     "message:accountDisabled": "Сенің проифльің уақытша өшірілді. Сенің проифльің басқаларына көрінбейтін болады. Оны баптауларда қайта қосуға болады",
+    "message:isOK": "Барлығы дұрыс па?",
+    "message:reported": "Сенің арызың админдерге жіберілді. Олар шара қолданғанда, хабарландырамын",
+    "message:getBanned": "You was banned by admins, try to contact tech support, if you think it is a mistake",
+    "message:getWarned": "You recieved a warning from admins. Don't violate on rules! You would be banned, if you get 3 warnings",
 
     "akt": "Ақтау ХББ",
     "akb": "Ақтөбе ФМБ",

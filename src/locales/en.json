@@ -16,6 +16,7 @@
     "button:deleteUserAnyway": "Yes, delete my account anyway",
     "button:report": "Report",
     "button:respond": "Respond",
+    "button:leaveCurrent": "Leave current data",
 
     "gender:male": "Male",
     "gender:female": "Female",
@@ -75,6 +76,10 @@
     "message:start": "Welcome, I connect NIS students",
     "message:stopedSearching": "You have stoped searching for a partner",
     "message:accountDisabled": "Your profile is now disabled. I wont show your profile anymore. You can turn it on in settings",
+    "message:isOK": "Is everything correct?",
+    "message:reported": "Your report was sent to admins",
+    "message:getBanned": "You was banned by admins, try to contact tech support, if you think it is a mistake",
+    "message:getWarned": "You recieved a warning from admins. Don't violate on rules! You would be banned, if you get 3 warnings",
 
     "akt": "Aktau CBD",
     "akb": "Aktobe PhMD",

@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum Gender {
@@ -53,6 +54,17 @@ enum Status {
     chatting
 }
 
+enum ReportType {
+    chitChat
+    newFriend
+}
+
+enum ReportAction {
+    warn
+    ban
+    skip
+}
+
 model User {
     id                  BigInt          @id @unique
     registrationDate    DateTime        @default(now())
@@ -66,6 +78,8 @@ model User {
     seen                Int[]           @default([])
     liked               Int[]           @default([])
     disabled            Boolean         @default(false)
+    banned              Boolean         @default(false)
+    warns               Int             @default(0)
 }
 
 model Profile {
@@ -86,4 +100,14 @@ model Queue {
     gender              Gender
     genderPreference    GenderPreference
     createdAt           DateTime            @default(now())
+}
+
+model Report {
+    id              Int             @id @default(autoincrement())
+    victim          Int
+    intruder        Int
+    type            ReportType
+    message         String?
+    resolved        Boolean         @default(false)
+    action          ReportAction?
 }

@@ -27,9 +27,8 @@ scene.hears('❤️', async (ctx) => {
     const user = await prisma.user.findUnique({ where: { id: profile?.userId } })
     if (!user || !profile) return
     const tgUser = await ctx.telegram.getChat(Number(user.id))
-    await ctx.replyWithHTML(i18n.t(user.language, 'message:newFriend', { username: tgUser.type == 'private' && tgUser.username, name: profile.name }), keyboards.report)
+    await ctx.replyWithHTML(i18n.t(ctx.session.user.language, 'message:newFriend', { username: tgUser.type == 'private' && tgUser.username, name: profile.name }))
     await ctx.telegram.sendMessage(Number(user.id), i18n.t(user.language, 'message:newFriend', { username: ctx.message.from.username, name: ctx.session.profile.name }), {
-        reply_markup: keyboards.report.reply_markup,
         parse_mode: 'HTML',
     })
     await show(ctx)
@@ -39,7 +38,6 @@ scene.hears('💌', async (ctx) => {
         reciever: ctx.session.user.seen[ctx.session.user.seen.length - 1],
         cancelFC: async (ctx: Context) => await ctx.scene.enter('viewLiked'),
         returnFC: async (ctx: Context) => {
-            console.log(ctx.from)
             await ctx.reply(i18n.t(ctx.session.user.language, 'message:messageSent'))
             await ctx.scene.enter('viewLiked')
         },

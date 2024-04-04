@@ -12,6 +12,7 @@ import usersOnly from './handlers/authorizedOnly'
 import { Update } from 'telegraf/types'
 import middlewares from './middlewares'
 import { viewProfilesState } from './scenes/viewProfiles'
+import authorizedOnly from './handlers/authorizedOnly'
 
 interface Session extends Scenes.WizardSession {
     user: User
@@ -31,9 +32,16 @@ const stage = new Scenes.Stage<Context>(Object.values(scenes))
 bot.use(session())
 bot.use(stage.middleware())
 bot.use(middlewares.checkAuth)
+bot.use(async (ctx, next) => {
+    if (ctx?.session?.user?.banned) return await ctx.reply('you are banned')
+    return next()
+})
 bot.use(middlewares.handleLiked)
 
 bot.start(handlers.start)
+
+bot.command('admin', handlers.authorizedOnly, handlers.adminsOnly, async (ctx) => await ctx.scene.enter('admin'))
+
 bot.hears(
     i18n.localesList.map((locale) => i18n.t(locale, 'button:profile')),
     handlers.authorizedOnly,
@@ -65,47 +73,53 @@ bot.hears(
     handlers.viewProfiles,
 )
 bot.action('changeLanguage', handlers.authorizedOnly, async (ctx) => await ctx.scene.enter('changeLanguage'))
+bot.action('changeProfile', handlers.authorizedOnly, async (ctx) => await ctx.scene.enter('changeProfile'))
 bot.action('deleteUser', handlers.authorizedOnly, async (ctx) => await ctx.scene.enter('deleteUser'))
 bot.action(/respond_\w+/, handlers.authorizedOnly, handlers.response)
+bot.action(/report_\w+_\w+/, handlers.authorizedOnly, handlers.report)
 
-bot.on(message('photo'), async (ctx) => {
+bot.action(/ban_\w+/, handlers.authorizedOnly, handlers.adminsOnly, handlers.ban)
+bot.action(/warn_\w+/, handlers.authorizedOnly, handlers.adminsOnly, handlers.warn)
+
+bot.on(message('photo'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendPhoto(Number(ctx.session.user.partner), ctx.message.photo[ctx.message.photo.length - 1].file_id, { caption: ctx.message.caption })
     }
 })
-bot.on(message('audio'), async (ctx) => {
+bot.on(message('audio'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendAudio(Number(ctx.session.user.partner), ctx.message.audio.file_id, { caption: ctx.message.caption })
     }
 })
-bot.on(message('voice'), async (ctx) => {
+bot.on(message('voice'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendVoice(Number(ctx.session.user.partner), ctx.message.voice.file_id, { caption: ctx.message.caption })
     }
 })
-bot.on(message('text'), async (ctx) => {
+bot.on(message('text'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendMessage(Number(ctx.session.user.partner), ctx.message.text)
     }
 })
-bot.on(message('sticker'), async (ctx) => {
+bot.on(message('sticker'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendSticker(Number(ctx.session.user.partner), ctx.message.sticker.file_id)
     }
 })
-bot.on(message('video'), async (ctx) => {
+bot.on(message('video'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendVideo(Number(ctx.session.user.partner), ctx.message.video.file_id, { caption: ctx.message.caption })
     }
 })
-bot.on(message('video_note'), async (ctx) => {
+bot.on(message('video_note'), authorizedOnly, async (ctx) => {
     if (ctx.session.user.status == 'chatting' && ctx.session.user.partner) {
         await ctx.telegram.sendVideoNote(Number(ctx.session.user.partner), ctx.message.video_note.file_id)
     }
 })
 
-bot.catch((err, ctx) => {
+bot.catch(async (err, ctx) => {
+    await ctx.reply('ERROR, dm @infxyz, pleaz')
     console.error(err)
-    console.log(ctx)
+    console.log(ctx, ctx.from)
 })
 bot.launch()

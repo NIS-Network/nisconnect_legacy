@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node -r dotenv/config dist/index.js",
-        "dev": "concurrently \"tsc -w\" \"nodemon -r dotenv/config dist/index.js\""
+        "dev": "concurrently \"tsc -w\" \"nodemon --ignore backups/ -r dotenv/config dist/index.js\""
     },
     "keywords": [
         "NIS",

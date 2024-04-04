@@ -7,6 +7,10 @@ import leavePartner from './leavePartner'
 import stopSearching from './stopSearching'
 import viewProfiles from './viewProfiles'
 import response from './response'
+import adminsOnly from './adminsOnly'
+import ban from './ban'
+import report from './report'
+import warn from './warn'
 
 export default {
     start,
@@ -18,4 +22,8 @@ export default {
     stopSearching,
     viewProfiles,
     response,
+    adminsOnly,
+    ban,
+    report,
+    warn,
 }

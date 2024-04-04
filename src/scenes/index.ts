@@ -4,6 +4,8 @@ import deleteUser from './deleteUser'
 import viewProfiles from './viewProfiles'
 import viewLiked from './viewLiked'
 import chitChat from './chitChat'
+import changeProfile from './changeProfile'
+import admin from './admin'
 
 export default {
     welcome,
@@ -12,4 +14,6 @@ export default {
     viewProfiles,
     viewLiked,
     chitChat,
+    changeProfile,
+    admin,
 }

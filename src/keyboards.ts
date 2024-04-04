@@ -1,6 +1,6 @@
 import { Markup } from 'telegraf'
 import chunk from './utils/chunk'
-import { City, Status } from '@prisma/client'
+import { City, Report, ReportType, Status } from '@prisma/client'
 import i18n from './utils/i18n'
 
 export const languagesList: Record<string, string> = {}
@@ -40,9 +40,23 @@ const deleteUser = (locale: string) => Markup.keyboard([[i18n.t(locale, 'button:
 const viewProfile = Markup.keyboard([['❤️', '💌', '👎', '💤']]).resize()
 const viewLiked = Markup.keyboard([['1. ❤️', '2. ❌']]).resize()
 const viewLikedProfile = Markup.keyboard([['❤️', '💌', '👎']]).resize()
-const report = (locale: string) => Markup.inlineKeyboard([[{ text: i18n.t(locale, 'button:report'), callback_data: 'report' }]])
+const report = (locale: string, victim: number, intruder: number, type: ReportType, message: string | null) =>
+    Markup.inlineKeyboard([[{ text: i18n.t(locale, 'button:report'), callback_data: `report_${victim}_${intruder}_${type}_${message}` }]])
 const respond = (locale: string, reciever: number) => Markup.inlineKeyboard([[{ text: i18n.t(locale, 'button:respond'), callback_data: `respond_${reciever}` }]])
 
+const oneButton = (text: string) => Markup.keyboard([[text]]).resize()
+
+const admin = Markup.keyboard([['Metrics', 'Database'], ['Change user', 'Change profile', 'Change queue'], ['Select user', 'Select profile'], ['Exit admin panel']]).resize()
+
+const reportAction = (report: Report) =>
+    Markup.inlineKeyboard([
+        [
+            { text: 'Warn the intruder', callback_data: `warn_${report.intruder}` },
+            { text: 'Ban the intruder', callback_data: `ban_${report.intruder}` },
+        ],
+        [{ text: 'Warn the victim', callback_data: `warn_${report.victim}` }],
+        [{ text: 'Delete the report', callback_data: `skipReport_${report.id}` }],
+    ])
 export default {
     empty,
     languages,
@@ -60,4 +74,7 @@ export default {
     viewLikedProfile,
     report,
     respond,
+    oneButton,
+    admin,
+    reportAction,
 }

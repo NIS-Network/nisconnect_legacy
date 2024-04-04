@@ -16,6 +16,7 @@
     "button:deleteUserAnyway": "Да, все равно удалить",
     "button:report": "Жалоба",
     "button:respond": "Ответить",
+    "button:leaveCurrent": "Оставить как есть",
 
     "gender:male": "Парень",
     "gender:female": "Девушка",
@@ -71,10 +72,14 @@
     "message:profile": "${name}, ${age} - ${bio}",
     "message:notAuthorized": "You don't have an account yet\nСен әлі тіркелген жоқсың\nУ тебя еще нет аккаунта",
     "message:partnerDisconected": "Твой партнер покинул диалог",
-    "message:youDisconected": "Ты покинул диалог",
+    "message:youDisconnected": "Ты покинул диалог",
     "message:start": "Добро пожаловать, Я конекчу учеников НИШ",
     "message:stopedSearching": "Ты остановил поиск анонимного собеседника",
     "message:accountDisabled": "Твой профиль отключен. Я не буду больше его показывать другим. Ты можешь включить его в настройках",
+    "message:isOK": "Все правильно?",
+    "message:reported": "Твоя жалоба отправлена админам. Ты будешь уведомлен, когда они примут мерыы",
+    "message:getBanned": "You was banned by admins, try to contact tech support, if you think it is a mistake",
+    "message:getWarned": "You recieved a warning from admins. Don't violate on rules! You would be banned, if you get 3 warnings",
 
     "akt": "Актау ХБН",
     "akb": "Актобе ФМН",
