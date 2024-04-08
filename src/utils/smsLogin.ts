@@ -9,6 +9,6 @@ export default async function login(login: string, password: string, city: City)
         },
         body: JSON.stringify({ login, password, captchaInput: '' }),
     })
-    // return res.status == 200
+    return res.status == 200
     return true
 }

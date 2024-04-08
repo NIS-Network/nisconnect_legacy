@@ -31,9 +31,9 @@ panel.hears('Database', async (ctx) => {
     const today = new Date()
     const date = `${today.getDay()}.${today.getMonth() + 1}.${today.getFullYear()}`
     const users = await prisma.user.findMany()
+    const profiles = await prisma.profile.findMany()
     const dirPath = path.join(__dirname, '..', '..', 'backups', date)
     const usersPath = path.join(__dirname, '..', '..', 'backups', date, `users.json`)
-    const profiles = await prisma.profile.findMany()
     const profilesPath = path.join(__dirname, '..', '..', 'backups', date, `profiles.json`)
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath)

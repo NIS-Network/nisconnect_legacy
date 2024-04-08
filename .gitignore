@@ -5,7 +5,9 @@
 /backups
 
 .DS_Store
+
 .env*
+!.env.example
 
 *.log
 npm-debug.log*
