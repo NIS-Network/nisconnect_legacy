@@ -72,7 +72,7 @@
     "message:profile": "${name}, ${age} - ${bio}",
     "message:notAuthorized": "You don't have an account yet\nСен әлі тіркелген жоқсың\nУ тебя еще нет аккаунта",
     "message:partnerDisconected": "Сенің анонимді досың диалогтан шығып кетті",
-    "message:youDisconected": "Сен диалогтан шығып кеттің",
+    "message:youDisconnected": "Сен диалогтан шығып кеттің",
     "message:start": "Қош келдің, мен НЗМ оқушыларын өзара байланыстырамын",
     "message:stopedSearching": "Сен анонимді дос іздеуді тоқтаттың",
     "message:accountDisabled": "Сенің профильің уақытша өшірілді. Сенің профильің басқаларына көрінбейтін болады. Оны баптауларда қайта қосуға болады",

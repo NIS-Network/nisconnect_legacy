@@ -1,6 +1,6 @@
 import { City } from '@prisma/client'
 
-export default async function login(login: string, password: string, city: City) {
+export default async function login(login: string, password: string, city: City): Promise<boolean> {
     const res = await fetch(`http://api.enish.app/login?city=${city}`, {
         method: 'POST',
         headers: {
@@ -9,6 +9,6 @@ export default async function login(login: string, password: string, city: City)
         },
         body: JSON.stringify({ login, password, captchaInput: '' }),
     })
-    return res.status == 200
+    // return res.status == 200е
     return true
 }

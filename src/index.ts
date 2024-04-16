@@ -118,8 +118,13 @@ bot.on(message('video_note'), authorizedOnly, async (ctx) => {
 })
 
 bot.catch(async (err, ctx) => {
-    await ctx.reply('ERROR, dm @infxyz, pleaz')
-    console.error(err)
-    console.log(ctx, ctx.from)
+    try {
+        await ctx.reply('ERROR, @NISConnectChat -> опишите')
+        console.error(err)
+        console.log(ctx, ctx.from)
+    } catch {
+        //
+    }
 })
-bot.launch()
+
+bot.launch({ dropPendingUpdates: true })

@@ -32,17 +32,14 @@ messageHandler.on(message('text'), async (ctx) => {
         // @ts-expect-error unsolved telegraf issue
         return await ctx.wizard.state.cancelFC(ctx)
     }
-    const report: ReportDTO = {
-        victim: profile.id,
-        intruder: ctx.session.profile.id,
-        type: 'chitChat',
-        message,
-    }
+    // const report: ReportDTO = {
+    //     victim: profile.id,
+    //     intruder: ctx.session.profile.id,
+    //     type: 'chitChat',
+    //     message,
+    // }
     await ctx.telegram.sendMessage(Number(profile.userId), i18n.t(user.language, 'message:responded', { name: ctx.session.profile.name, message }), {
-        reply_markup: combineInlineKeyboards(
-            keyboards.report(user.language, report.victim, report.intruder, report.type, report.message),
-            keyboards.respond(user.language, Number(ctx.session.profile.id)),
-        ).reply_markup,
+        reply_markup: combineInlineKeyboards(keyboards.respond(user.language, Number(ctx.session.profile.id))).reply_markup,
     })
     await ctx.scene.leave()
     // @ts-expect-error unsolved telegraf issue

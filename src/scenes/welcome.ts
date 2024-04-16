@@ -5,6 +5,7 @@ import i18n from '../utils/i18n'
 import keyboards, { languagesList } from '../keyboards'
 import login from '../utils/smsLogin'
 import prisma from '../utils/prisma'
+import bigIntStringify from '../utils/bigIntStringify'
 
 const cancel = async (ctx: Context, next: () => Promise<void>) => {
     if (ctx.has(message('text'))) {
@@ -34,6 +35,7 @@ languageHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'welcome:greeting'), keyboards.start(ctx.scene.state.language))
     return ctx.wizard.next()
 })
+languageHandler.use(async (ctx) => await ctx.reply(i18n.t('message:language'), keyboards.languages))
 
 const startHandler = new Composer<Context>()
 startHandler.use(cancel)
@@ -45,6 +47,7 @@ startHandler.on(message('text'), async (ctx) => {
         return ctx.wizard.next()
     }
 })
+startHandler.use()
 
 const loginHandler = new Composer<Context>()
 loginHandler.use(cancel)
@@ -62,6 +65,8 @@ loginHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:password'))
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+loginHandler.use(async (ctx) => await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:login'), keyboards.empty))
 
 const passwordHandler = new Composer<Context>()
 passwordHandler.use(cancel)
@@ -72,6 +77,7 @@ passwordHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:city'), keyboards.city(ctx.scene.state.language))
     return ctx.wizard.next()
 })
+passwordHandler.use()
 
 const cityHandler = new Composer<Context>()
 cityHandler.use(cancel)
@@ -86,13 +92,9 @@ cityHandler.on(callbackQuery('data'), async (ctx) => {
         await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:failed'))
         return await ctx.scene.leave()
     }
-    await ctx.telegram.editMessageText(
-        ctx.callbackQuery.message?.chat.id,
-        ctx.callbackQuery.message?.message_id,
-        ctx.callbackQuery.inline_message_id,
-        // @ts-expect-error unsolved telegraf issue
-        i18n.t(ctx.scene.state.language, 'registration:success'),
-    )
+    // @ts-expect-error unsolved telegraf issue
+    await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:success'))
+
     return ctx.wizard.next()
 })
 cityHandler.use(async (ctx) => {
@@ -104,13 +106,15 @@ ageHandler.use(cancel)
 ageHandler.on(message('text'), async (ctx) => {
     const age = Number(ctx.message.text)
     // @ts-expect-error unsolved telegraf issue
-    if (!age) return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:age'), keyboards.empty)
+    if (!age || isNaN(age)) return await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:age'), keyboards.empty)
     // @ts-expect-error unsolved telegraf issue
     ctx.scene.state.age = age
     // @ts-expect-error unsolved telegraf issue
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:gender'), keyboards.gender(ctx.scene.state.language))
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+ageHandler.use(async (ctx) => await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:age'), keyboards.empty))
 
 const genderHandler = new Composer<Context>()
 genderHandler.use(cancel)
@@ -132,6 +136,8 @@ genderHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:genderPreference'), keyboards.interest(ctx.scene.state.language))
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+genderHandler.use(async (ctx) => await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:gender'), keyboards.gender(ctx.scene.state.language)))
 
 const genderPreferenceHandler = new Composer<Context>()
 genderPreferenceHandler.use(cancel)
@@ -157,6 +163,8 @@ genderPreferenceHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:name'), keyboards.empty)
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+genderPreferenceHandler.use(async (ctx) => await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:genderPreference'), keyboards.interest(ctx.scene.state.language)))
 
 const nameHandler = new Composer<Context>()
 nameHandler.use(cancel)
@@ -167,6 +175,8 @@ nameHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:bio'))
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+nameHandler.use(async (ctx) => await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:name')))
 
 const bioHandler = new Composer<Context>()
 bioHandler.use(cancel)
@@ -177,6 +187,8 @@ bioHandler.on(message('text'), async (ctx) => {
     await ctx.reply(i18n.t(ctx.scene.state.language, 'registration:photo'))
     return ctx.wizard.next()
 })
+// @ts-expect-error unsolved telegraf issue
+bioHandler.use(async (ctx) => await ctx.reply(ctx.scene.state.language, 'registration:photo'))
 
 const photoHandler = new Composer<Context>()
 photoHandler.use(cancel)
@@ -205,6 +217,7 @@ photoHandler.on(message('photo'), async (ctx) => {
         data: { age: ctx.scene.state.age, bio: ctx.scene.state.bio, gender: ctx.scene.state.gender, name: ctx.scene.state.name, genderPreference: ctx.scene.state.genderPreference, photoId: ctx.scene.state.photoId, userId: ctx.message.from.id },
     })
     ctx.session.authorized = true
+    await ctx.telegram.sendMessage(6033264583, `new user: ${bigIntStringify(ctx.session.user)}`)
     return await ctx.scene.leave()
 })
 photoHandler.use(async (ctx) => {
